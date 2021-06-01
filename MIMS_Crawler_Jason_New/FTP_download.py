@@ -31,10 +31,12 @@ def gz_extract(directory):
                 shutil.copyfileobj(f_in, f_out)
               
             os.remove(gz_name) # delete zipped file
+            
+    return directory+'/'+file_name
 
 class NCBI_CLINVAR:
     
-    def __init__(self,site_address):
+    def __init__(self,site_address,input_file__name="none"):
         
         self.site_address = site_address
         
@@ -65,8 +67,12 @@ class NCBI_CLINVAR:
             ftp.retrbinary('RETR ' + download, open(download,'wb').write)
             
         directory = savedir
+        
+        
+        
+        self.input_file__name = gz_extract(directory)
             
-        gz_extract(directory)
+       
             
 
     

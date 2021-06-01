@@ -48,7 +48,7 @@ def view_argparser(subparsers):
     data_types = ["json"]
 
     # add argument keys within "ViewVCF"
-    parser_a.add_argument("-inVCF", required=True, help="Sorted vcf file.")
+    parser_a.add_argument("-inVCF", required=False, help="Sorted vcf file.")
     
     parser_a.add_argument("-MultiThread", required=True, help="MultiThread.")
     
@@ -93,7 +93,7 @@ def simplify_argparser(subparsers):
         choices=["jason"],
         required=True,
     )
-    parser_b.add_argument("-inVCF", help="Sorted vcf file.", required=True)
+    parser_b.add_argument("-inVCF", help="Sorted vcf file.", required=False)
     parser_b.add_argument("-MultiThread", help="MultiThread", required=True)
     parser_b.add_argument("-outFile", help="Name of the output file.", required=True)
     parser_b.add_argument(

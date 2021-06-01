@@ -6,8 +6,6 @@ import argparse
 from assign_task import sub_argparsers
 from assign_task.perform_operation import vcf_solver
 
-from multiprocessing import freeze_support
-
 import FTP_download
 
 
@@ -35,18 +33,18 @@ def main():
 
     task = sys.argv[1]
     
+    args.inVCF = MIMS.input_file__name
+    
     print(f'Number of Threads is {args.MultiThread}')
+    
+    print(f'File has been downloaded{args.inVCF}')
     
     vcf_solver(task, args)
    
 if __name__ == "__main__":
     
-    freeze_support()   # required to use multiprocessing
-    
     site_address = "ftp.ncbi.nlm.nih.gov"
     
     MIMS = FTP_download.NCBI_CLINVAR(site_address)
-    
-    print("File has been downloaded")
     
     main()

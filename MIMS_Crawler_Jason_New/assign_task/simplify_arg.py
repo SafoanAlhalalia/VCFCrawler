@@ -1,31 +1,5 @@
 
 
-def parse_vcf_to_haplotype(vcf_to_haplotype):
-    """ Arguments for converting VCF file to Haplotype """
-    vcf_to_haplotype.add_argument(
-        "-PG",
-        required=False,
-        default="PG",
-        help="FORMAT tag representing the phased genotype.\n"
-            "Default: PG \n"
-            "Note: 'GT' can be used if it contains the phased genotype.",
-    )
-    vcf_to_haplotype.add_argument(
-        "-PI",
-        required=False,
-        default="PI",
-        help="FORMAT tag representing the unique phased haplotype block index." + "\n"
-        + "Note: 'CHROM' can also be used as 'PI' if the VCF is phased chromosome or contig wide. ",
-    )
-    vcf_to_haplotype.add_argument(
-        "-includeUnphased", type=str,
-        default='0',
-        required=False,
-        help="include unphased variants (genotypes) in the haplotype output." + "\n"
-            + "Default: no (0) (i.e do not write unphased variants)",
-        choices=["yes", "no", '0', '1'],
-    )    
-
 
 def parse_vcf_to_table(vcf_to_table):
     """ Argument for converting VCF file to a Table """ 
