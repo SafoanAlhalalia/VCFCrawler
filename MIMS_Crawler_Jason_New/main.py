@@ -6,6 +6,8 @@ import argparse
 from assign_task import sub_argparsers
 from assign_task.perform_operation import vcf_solver
 
+from multiprocessing import freeze_support
+
 import FTP_download
 
 
@@ -16,9 +18,6 @@ state may be extracted as well."""
 
 
 def main():
-
-    # print author name 
-#     author_name.print_author_name()
 
     # define argument variables
     main_parser = argparse.ArgumentParser(
@@ -41,6 +40,8 @@ def main():
     vcf_solver(task, args)
    
 if __name__ == "__main__":
+    
+    freeze_support()   # required to use multiprocessing
     
     site_address = "ftp.ncbi.nlm.nih.gov"
     

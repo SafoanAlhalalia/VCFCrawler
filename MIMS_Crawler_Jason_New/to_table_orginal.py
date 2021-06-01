@@ -3,134 +3,14 @@ import sys
 import itertools
 import warnings
 
-import threading
-
-from multiprocessing import Process
-
 import json
 
 from metadata_parser.vcf_metadata_parser import VcfReadMetaData
 from records_parser.vcf_records_parser import VcfReadIndividualRecord
 from metadata_parser.utils import time_memory_track
 
-class myThread (threading.Thread):
-    def __init__(self, record_keys,all_samples,my_infos,output_header,my_preheader,write_as_json,write_as_json1,records):
-        threading.Thread.__init__(self)
-        self.record_keys = record_keys
-        self.all_samples = all_samples
-        self.my_infos = my_infos
-        self.output_header = output_header
-        self.my_preheader = my_preheader
-        self.write_as_json = write_as_json
-        self.write_as_json1 = write_as_json1
-        self.records = records
-    def run(self):
-        print("Starting " )
-        Process_data_to_jason(self.record_keys, self.all_samples, self.my_infos,self.output_header,self.my_preheader,self.write_as_json,self.write_as_json1,self.records)
-        print("Exiting " )
-
-def Process_data_to_jason(record_keys,all_samples,my_infos,output_header,my_preheader,write_as_json,write_as_json1,records):
-# for records in records_gen:
-    
-    chr_on_process = ""
-    
-    line_to_write = []  # create new emtpy variable
-
-    mapped_record = VcfReadIndividualRecord(
-        recordKeys=record_keys, inRecord=records, 
-        sample_names=all_samples
-    ).read_vcfRecord()
-    
-
-    """Now, this mapped records can be mined for extracting required data."""
-    contig = mapped_record["CHROM"]
-
-    # find which chr is in the process
-    if chr_on_process != contig:
-        print("Contig %s is being processed ... " % str(contig))
-        print()
-        chr_on_process = contig
-
-    # Step 04-A : mine the values for 'pre header' of interest
-    #line_to_write += [mapped_record.get(prex, '.') for prex in pre_header]
-    line_to_write += [mapped_record[prex] for prex in my_preheader]
-    #raise KeyError('key does not exist')                
-
-
-    # Step 04-B: mine the values for the INFO tags of interest
-    infos_to_write = process_info(my_infos, mapped_record)
-    line_to_write += infos_to_write
-    
-    dict_to_write = {output_header[x]:line_to_write[x] for x in range(len(line_to_write))}
-    
-    dict_link_to_write = {"_from":dict_to_write["ID"], "_to":dict_to_write["INFO:RS"]}
-    
-    del dict_to_write["INFO:RS"]
-    
-    
-
-    # Step 04-C: compute values for the FORMAT fields of interest for each SAMPLE names of interest
-    # so, we need to use both format_fields and sample_names together
-    # and pass it to a defined function
-    
-###################################################################################################
-#   Safoan Add this for nodes.json
-#########################################################################################3##########
-    """Convert the dictionary to a json object and write to a file"""
-    print("\twriting metadata as JSON")
-#             json_obj_string = json.dumps(mapped_record)
-    json_obj_string = json.dumps([dict_to_write])
-    datastore = json.loads(json_obj_string)
-    
-#     print(dict_to_write)
-    
-#                 outFile = "testOutput"
-
-#                 with open("%s.json" % outFile, "w", encoding="utf-8") as write_as_json:
-
-    json.dump(datastore, write_as_json, ensure_ascii=False, indent=4)
-
-#     try:
-#         json.dump(datastore, write_as_json, ensure_ascii=False, indent=4)
-#          
-#     except:
-#          
-#         pass
-################################################################################################
-
-###################################################################################################
-#   Safoan Add this for links.json
-#########################################################################################3##########
-    """Convert the dictionary to a json object and write to a file"""
-    print("\twriting metadata as JSON")
-#             json_obj_string = json.dumps(mapped_record)
-    json_obj_string = json.dumps([dict_link_to_write])
-    datastore1 = json.loads(json_obj_string)
-    
-    json.dump(datastore1, write_as_json1, ensure_ascii=False, indent=4)
-    
-#     try:
-#         
-#         json.dump(datastore1, write_as_json1, ensure_ascii=False, indent=4)
-#          
-#     except:
-#          
-#         pass
-    
-#     return datastore1
-    
-#     print(dict_link_to_write)
-    
-#                 outFile = "testOutput"
-
-#                 wit open("h%s.json" % outFile, "w", encoding="utf-8") as write_as_json:
-#     json.dump(datastore1, write_as_json1, ensure_ascii=False, indent=4)
-################################################################################################
-
-# partial_sum_four = functools.partial(Process_data_to_jason, a, b, c)
-
 """Step 03 (B) : Function for VCF To Table."""
-# @time_memory_track
+@time_memory_track
 def fnc_vcf_to_table(input_vcf, out_filename, preheader,  infos,  samples):
     # extract metadata and raw header from the input VCF
     metadata, only_header, record_keys = VcfReadMetaData(input_vcf).read_metadata()
@@ -186,32 +66,76 @@ def fnc_vcf_to_table(input_vcf, out_filename, preheader,  infos,  samples):
 
         # skips line starting with '#'
         records_gen = itertools.dropwhile(lambda line: line.startswith("#"), invcf)
-        
-#         n_processors = args.MultiThread
+        for records in records_gen:
+            line_to_write = []  # create new emtpy variable
 
-        items = [record for record in records_gen]
-        
-        thread_list = []
-
-        n_processors = 6
-        
-        for record in items:
-        # Instantiates the thread
-            # Create new threads
-            thread_list.append(myThread(record_keys,all_samples,my_infos,output_header,my_preheader,write_as_json,write_as_json1,record))
-
-        for thread in thread_list:
+            mapped_record = VcfReadIndividualRecord(
+                recordKeys=record_keys, inRecord=records, 
+                sample_names=all_samples
+            ).read_vcfRecord()
             
-            thread.start() 
-#             json.dump(A, write_as_json, ensure_ascii=False, indent=4)
-#         for record in items:
+
+            """Now, this mapped records can be mined for extracting required data."""
+            contig = mapped_record["CHROM"]
+
+            # find which chr is in the process
+            if chr_on_process != contig:
+                print("Contig %s is being processed ... " % str(contig))
+                print()
+                chr_on_process = contig
+
+            # Step 04-A : mine the values for 'pre header' of interest
+            #line_to_write += [mapped_record.get(prex, '.') for prex in pre_header]
+            line_to_write += [mapped_record[prex] for prex in my_preheader]
+            #raise KeyError('key does not exist')                
+
+
+            # Step 04-B: mine the values for the INFO tags of interest
+            infos_to_write = process_info(my_infos, mapped_record)
+            line_to_write += infos_to_write
             
-#             Process_data_to_jason(record_keys,all_samples,my_infos,output_header,my_preheader,write_as_json,write_as_json1,record)
+            dict_to_write = {output_header[x]:line_to_write[x] for x in range(len(line_to_write))}
+            
+            dict_link_to_write = {"_from":dict_to_write["ID"], "_to":dict_to_write["INFO:RS"]}
+            
+            del dict_to_write["INFO:RS"]
+            
+            
+
+            # Step 04-C: compute values for the FORMAT fields of interest for each SAMPLE names of interest
+            # so, we need to use both format_fields and sample_names together
+            # and pass it to a defined function
+            
+###################################################################################################
+#   Safoan Add this for nodes.json
+#########################################################################################3##########
+            """Convert the dictionary to a json object and write to a file"""
+            print("\twriting metadata as JSON")
+#             json_obj_string = json.dumps(mapped_record)
+            json_obj_string = json.dumps([dict_to_write])
+            datastore = json.loads(json_obj_string)
+            
+#                 outFile = "testOutput"
         
-#         Process(target=Process_data_to_jason, args=( record_keys,all_samples,my_infos,output_header,my_preheader,write_as_json,write_as_json1,items))
+#                 with open("%s.json" % outFile, "w", encoding="utf-8") as write_as_json:
+            json.dump(datastore, write_as_json, ensure_ascii=False, indent=4)
+################################################################################################
+
+###################################################################################################
+#   Safoan Add this for links.json
+#########################################################################################3##########
+            """Convert the dictionary to a json object and write to a file"""
+            print("\twriting metadata as JSON")
+#             json_obj_string = json.dumps(mapped_record)
+            json_obj_string = json.dumps([dict_link_to_write])
+            datastore = json.loads(json_obj_string)
+            
+#                 outFile = "testOutput"
         
-        
-                      
+#                 with open("%s.json" % outFile, "w", encoding="utf-8") as write_as_json:
+            json.dump(datastore, write_as_json1, ensure_ascii=False, indent=4)
+################################################################################################
+                    
             # write_block.write('\n')
     print("elapsed time: ", time.time() - start_time01)
     print("Completed converting the VCF file to table output.")
