@@ -26,14 +26,12 @@ def vcf_solver(task, args):
         
         print("  Simplifying the VCF records ...")
     
-        outfile = args.outFile
         infile = args.inVCF
 
         preheader = args.preHeader
         samples = args.samples
         infos = args.infos
-#         gtbase = args.GTbase 
-        fnc_vcf_to_table(infile, outfile, preheader,  infos,  samples)
+        fnc_vcf_to_table(infile,  preheader,  infos,  samples)
 
     else:
         print(

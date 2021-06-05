@@ -98,7 +98,7 @@ def Process_data_to_jason(record_keys,all_samples,my_infos,output_header,my_preh
 
 """Step 03 (B) : Function for VCF To Table."""
 @time_memory_track
-def fnc_vcf_to_table(input_vcf, out_filename, preheader,  infos,  samples):
+def fnc_vcf_to_table(input_vcf,  preheader,  infos,  samples):
     # extract metadata and raw header from the input VCF
     metadata, only_header, record_keys = VcfReadMetaData(input_vcf).read_metadata()
 
