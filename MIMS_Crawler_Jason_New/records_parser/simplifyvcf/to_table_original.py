@@ -11,7 +11,7 @@ from metadata_parser.utils import time_memory_track
 
 """Step 03 (B) : Function for VCF To Table."""
 @time_memory_track
-def fnc_vcf_to_table(input_vcf, out_filename, preheader,  infos,  samples):
+def fnc_vcf_to_table(input_vcf,  preheader,  infos,  samples):
     # extract metadata and raw header from the input VCF
     metadata, only_header, record_keys = VcfReadMetaData(input_vcf).read_metadata()
 
@@ -110,7 +110,6 @@ def fnc_vcf_to_table(input_vcf, out_filename, preheader,  infos,  samples):
 #   Safoan Add this for nodes.json
 #########################################################################################3##########
             """Convert the dictionary to a json object and write to a file"""
-            print("\twriting metadata as JSON")
 #             json_obj_string = json.dumps(mapped_record)
             json_obj_string = json.dumps([dict_to_write])
             datastore = json.loads(json_obj_string)
@@ -125,14 +124,10 @@ def fnc_vcf_to_table(input_vcf, out_filename, preheader,  infos,  samples):
 #   Safoan Add this for links.json
 #########################################################################################3##########
             """Convert the dictionary to a json object and write to a file"""
-            print("\twriting metadata as JSON")
-#             json_obj_string = json.dumps(mapped_record)
             json_obj_string = json.dumps([dict_link_to_write])
             datastore = json.loads(json_obj_string)
             
-#                 outFile = "testOutput"
         
-#                 with open("%s.json" % outFile, "w", encoding="utf-8") as write_as_json:
             json.dump(datastore, write_as_json1, ensure_ascii=False, indent=4)
 ################################################################################################
                     
@@ -175,93 +170,14 @@ def process_fields(given_tags, all_fields, argument_flag):
                       % (non_matching_key, argument_flag))
                 sys.exit(0)
             
-
+# 
 def process_info(info_fields, mapped_record):    
     """ map and write info """
-    
+     
     infos_to_write = [
         mapped_record["INFO"].get(inftags, ".") for inftags in info_fields
     ]
     return infos_to_write
-
+ 
     # now, for each SAMPLE compute and write the FORMAT's field of interest
-
-
-def process_format_wide(mapped_record, my_samples, my_formats):
-
-    format_to_write = []
-    for name in my_samples:
-        format_to_write += [
-            mapped_record[name].get(fmtags, ".") for fmtags in my_formats
-        ]
-
-    # ?? to do (Bishwa) - add method to convert GT tags numeric values to IUPAC bases
-    return format_to_write
-
-
-def process_format_long(mapped_record, sample, my_formats):
-    format_to_write = [sample]
-    format_to_write += [mapped_record[sample].get(fmtags, ".") for fmtags in my_formats]
-    # ?? to do (Bishwa) - add method to convert GT tags numeric values to IUPAC bases
-
-    return format_to_write
-
-
-def find_sample_name_by_stringmatch(soi, all_samples):
-    # for situation when sample name are given in prefix, suffix, or match
-    # e.g: -sample MA605 prefix:ms match:A6
-    
-    selected_samples = []
-    
-    matches = ["prefix:", "suffix:", "match:"]
-    
-    for name in soi:
-        if name.startswith("prefix:"):
-            nameprefix = name.lstrip("prefix:")
-            selected_samples += [x for x in all_samples if x.startswith(nameprefix)]
-            
-        elif name.startswith("suffix:"):
-            namesuffix = name.lstrip("suffix:")
-            selected_samples += [x for x in all_samples if x.endswith(namesuffix)]
-            
-        elif name.startswith("match:"):
-            namematch = name.lstrip("match:")
-            selected_samples += [x for x in all_samples if namematch in x]
-            
-        else:
-            selected_samples += [name]
-    
-    # to make sure the sample names are unique, but will randomize the order of the names
-    selected_samples = set(selected_samples)
-    
-    # this ensures that order of sample name is returned according to order of file sample names        
-    sample_set = [sample for sample in all_samples if sample in selected_samples]
-    
-    # further check sample names are valid
-    sample_set = process_fields(sample_set, all_samples, argument_flag='-samples')    
-    
-    return sample_set
-    
-
-def check_sample_and_format(sample_names, format_tags):
-    """ check that format and sample names are raised properly 
-        - if no samples are raised no formats can be raised and vice versa. 
-    """
-    if len(sample_names) == 0 and len(format_tags) != 0:
-        print("if no sample names then there should be no format tags")
-        print("exiting")
-        sys.exit(0)
-
-    if len(sample_names) != 0 and len(format_tags) == 0:
-        print("if no format tags then there should be no sample names")
-        print("exiting")
-        sys.exit(0)
-        
-        
-def parse_genotypes_format(gtbase):
-    gt_output = []
-    for gts in gtbase:
-        gt_output.append(gts.split(':'))
-        
-    return tuple(gt_output)
-
+# 
