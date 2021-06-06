@@ -33,18 +33,18 @@ def main():
 
     task = sys.argv[1]
     
+    site_address = "ftp.ncbi.nlm.nih.gov"
+    
+    MIMS = FTP_download.NCBI_CLINVAR(site_address,args.SaveDirectory)
+     
     args.inVCF = MIMS.input_file__name
     
     print(f'Number of Threads is {args.MultiThread}')
     
-    print(f'File has been downloaded{args.inVCF}')
+    print(f'File has been downloaded: {args.inVCF}')
     
     vcf_solver(task, args)
    
 if __name__ == "__main__":
-    
-    site_address = "ftp.ncbi.nlm.nih.gov"
-    
-    MIMS = FTP_download.NCBI_CLINVAR(site_address)
     
     main()

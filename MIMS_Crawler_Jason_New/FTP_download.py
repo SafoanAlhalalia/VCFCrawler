@@ -36,13 +36,15 @@ def gz_extract(directory):
 
 class NCBI_CLINVAR:
     
-    def __init__(self,site_address,input_file__name="none"):
+    def __init__(self,site_address,savedir):
         
         self.site_address = site_address
         
-        self.Crawler(site_address)
+        self.savedir = savedir
+        
+        self.Crawler(site_address,savedir)
 
-    def Crawler(self,site_address):
+    def Crawler(self,site_address,savedir):
     
         with ftplib.FTP(site_address) as ftp:
             
@@ -54,7 +56,7 @@ class NCBI_CLINVAR:
             
             print("Current Directory",ftp.pwd()) # print out the current directory using pwd
             
-            savedir = "C:/MIMS"    # name of the directory in which the file will be installed
+#             savedir = "C:/MIMS"    # name of the directory in which the file will be installed
             
             os.chdir(savedir)       # change the directory to the directory you want to install the file in
             
@@ -67,8 +69,6 @@ class NCBI_CLINVAR:
             ftp.retrbinary('RETR ' + download, open(download,'wb').write)
             
         directory = savedir
-        
-        
         
         self.input_file__name = gz_extract(directory)
             

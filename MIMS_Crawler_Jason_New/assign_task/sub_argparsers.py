@@ -34,6 +34,8 @@ def view_argparser(subparsers):
    
     parser_a.add_argument("-MultiThread", required=True, help="MultiThread.")
     
+    parser_a.add_argument("-SaveDirectory", required=True, help="SaveDirectory.")
+    
     parser_a.add_argument(
         "-outType",
         required = False,
@@ -61,6 +63,8 @@ def simplify_argparser(subparsers):
         required=True,
     )
     parser_b.add_argument("-MultiThread", help="MultiThread", required=True)
+    
+    parser_b.add_argument("-SaveDirectory", help="SaveDirectory", required=True)
     
     """Part A (02) : sub arguments for - From VCF to Table"""
     vcf_to_table = parser_b.add_argument_group(
