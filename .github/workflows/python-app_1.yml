@@ -34,5 +34,4 @@ jobs:
     - name: Test with pytest
       run: |
         PYTHONPATH= MIMS_Crawler_Jason_New
-
         pytest
