@@ -30,4 +30,4 @@ Python3 main.py SimplifyVCF  -MultiThread 4 -SaveDirectory C:/MIMS -toType jason
 	
 6. I used Eclipse IDE with git to develop this project.
 
-7. I usually use EC2, Lambda, Sagemaker to prepare the image and run it for project instead docker.
+7. I usually use EC2, Lambda, Sagemaker to run it for project instead docker.
